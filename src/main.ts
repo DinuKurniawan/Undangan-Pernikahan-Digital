@@ -1,13 +1,59 @@
 // ==================== GUEST NAME FROM URL ====================
+function normalizeGuestName(value: string): string {
+  return value
+    .replace(/[+_]/g, ' ')
+    .replace(/%20/gi, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getGuestNameFromHash(): string | null {
+  const hash = window.location.hash.replace(/^#/, '').trim();
+
+  if (!hash) {
+    return null;
+  }
+
+  const hashParams = new URLSearchParams(hash);
+  const keys = ['to', 'guest', 'nama', 'tamu', 'untuk'];
+
+  for (const key of keys) {
+    const value = hashParams.get(key);
+
+    if (value) {
+      return normalizeGuestName(value);
+    }
+  }
+
+  return normalizeGuestName(hash);
+}
+
+function getGuestNameFromPath(): string | null {
+  const segments = window.location.pathname
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  const lastSegment = segments[segments.length - 1];
+
+  if (!lastSegment || lastSegment.toLowerCase() === 'index.html' || lastSegment.includes('.')) {
+    return null;
+  }
+
+  return normalizeGuestName(lastSegment);
+}
+
 function getGuestNameFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
-  const keys = ['to', 'guest', 'nama', 'tamu'];
+  const keys = ['to', 'guest', 'nama', 'tamu', 'untuk'];
 
   for (const key of keys) {
     const value = params.get(key);
 
     if (value) {
-      const normalized = value.replace(/\s+/g, ' ').trim();
+      const normalized = normalizeGuestName(value);
 
       if (normalized) {
         return normalized;
@@ -15,7 +61,7 @@ function getGuestNameFromUrl(): string | null {
     }
   }
 
-  return null;
+  return getGuestNameFromHash() ?? getGuestNameFromPath();
 }
 
 function setGuestName(): void {
