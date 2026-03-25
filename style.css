@@ -600,65 +600,6 @@ body {
   text-align: left;
 }
 
-/* ==================== WISHES ==================== */
-.wishes {
-  background: var(--white);
-}
-
-.wishes-form {
-  max-width: 500px;
-  margin: 0 auto 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.wishes-form input,
-.wishes-form textarea {
-  font-family: var(--font-body);
-  padding: 14px 18px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  transition: border-color 0.3s ease;
-  outline: none;
-  background: var(--bg);
-}
-
-.wishes-form input:focus,
-.wishes-form textarea:focus {
-  border-color: var(--gold);
-}
-
-.wishes-form textarea {
-  resize: vertical;
-}
-
-.attendance-group {
-  text-align: left;
-}
-
-.attendance-group label:first-child {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.radio-group {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.radio-group label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
 .btn-submit {
   font-family: var(--font-body);
   padding: 14px 30px;
@@ -675,42 +616,6 @@ body {
 
 .btn-submit:hover {
   background: var(--primary-dark);
-}
-
-.wishes-list {
-  max-width: 500px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.wish-card {
-  background: var(--bg);
-  padding: 20px;
-  border-radius: 15px;
-  border-left: 4px solid var(--gold);
-  animation: fadeInUp 0.5s ease;
-}
-
-.wish-card .wish-author {
-  font-weight: 600;
-  color: var(--primary-dark);
-  margin-bottom: 5px;
-}
-
-.wish-card .wish-text {
-  font-size: 0.9rem;
-  color: var(--text-light);
-  margin-bottom: 8px;
-}
-
-.wish-card .wish-attendance {
-  font-size: 0.8rem;
-  color: var(--gold);
-  font-weight: 500;
 }
 
 /* ==================== FOOTER ==================== */
@@ -886,11 +791,6 @@ body {
 
   .countdown-number {
     font-size: 1.6rem;
-  }
-
-  .radio-group {
-    flex-direction: column;
-    gap: 10px;
   }
 
   .generated-links {
