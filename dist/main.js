@@ -1,16 +1,31 @@
 "use strict";
 // ==================== GUEST NAME FROM URL ====================
-function setGuestName() {
+function getGuestNameFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    const guestName = params.get('to');
-    const el = document.getElementById('guestName');
-    if (el && guestName) {
-        el.textContent = decodeURIComponent(guestName);
+    const keys = ['to', 'guest', 'nama', 'tamu'];
+    for (const key of keys) {
+        const value = params.get(key);
+        if (value) {
+            const normalized = value.replace(/\s+/g, ' ').trim();
+            if (normalized) {
+                return normalized;
+            }
+        }
     }
-    // Auto-fill wish name if guest name exists
+    return null;
+}
+function setGuestName() {
+    const guestName = getGuestNameFromUrl();
+    const guestNameElements = document.querySelectorAll('[data-guest-name]');
+    if (guestName) {
+        guestNameElements.forEach((element) => {
+            element.textContent = guestName;
+        });
+        document.title = `Undangan Pernikahan untuk ${guestName}`;
+    }
     const wishNameInput = document.getElementById('wishName');
     if (wishNameInput && guestName) {
-        wishNameInput.value = decodeURIComponent(guestName);
+        wishNameInput.value = guestName;
     }
 }
 // ==================== OPEN INVITATION ====================

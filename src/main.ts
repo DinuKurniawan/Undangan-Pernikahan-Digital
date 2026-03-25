@@ -1,17 +1,39 @@
 // ==================== GUEST NAME FROM URL ====================
-function setGuestName(): void {
+function getGuestNameFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
-  const guestName = params.get('to');
-  const el = document.getElementById('guestName');
+  const keys = ['to', 'guest', 'nama', 'tamu'];
 
-  if (el && guestName) {
-    el.textContent = decodeURIComponent(guestName);
+  for (const key of keys) {
+    const value = params.get(key);
+
+    if (value) {
+      const normalized = value.replace(/\s+/g, ' ').trim();
+
+      if (normalized) {
+        return normalized;
+      }
+    }
   }
 
-  // Auto-fill wish name if guest name exists
+  return null;
+}
+
+function setGuestName(): void {
+  const guestName = getGuestNameFromUrl();
+  const guestNameElements = document.querySelectorAll<HTMLElement>('[data-guest-name]');
+
+  if (guestName) {
+    guestNameElements.forEach((element) => {
+      element.textContent = guestName;
+    });
+
+    document.title = `Undangan Pernikahan untuk ${guestName}`;
+  }
+
   const wishNameInput = document.getElementById('wishName') as HTMLInputElement | null;
+
   if (wishNameInput && guestName) {
-    wishNameInput.value = decodeURIComponent(guestName);
+    wishNameInput.value = guestName;
   }
 }
 
