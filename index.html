@@ -19,7 +19,9 @@
       <div class="cover-date">20 . 06 . 2026</div>
       <div class="cover-guest">
         <p>Kepada Yth.</p>
-        <p class="guest-name" id="guestName" data-guest-name>Tamu Undangan</p>
+        <p class="guest-name-prefix">Bapak / Ibu / Saudara / i</p>
+        <p class="guest-name" id="guestName" data-guest-name>Nama Tamu</p>
+        <p class="guest-name-hint" id="guestNameHint">Tambahkan nama tamu di link, contoh: <span>?to=Budi Santoso</span></p>
       </div>
       <button class="btn-open" id="btnOpen">Buka Undangan</button>
     </div>
@@ -113,6 +115,36 @@
           </div>
         </div>
         <a href="https://maps.google.com" target="_blank" class="btn-maps">📍 Buka Google Maps</a>
+      </div>
+    </section>
+
+    <section class="section link-generator" id="linkGenerator">
+      <div class="container">
+        <h2 class="section-title">Generator Link Tamu</h2>
+        <p class="generator-intro">Setelah website di-deploy ke Vercel, isi domain website dan nama tamu. Sistem akan membuat link undangan personal yang siap Anda kirim.</p>
+        <form class="generator-form fade-in" id="linkGeneratorForm">
+          <input type="url" id="baseUrlInput" placeholder="https://undanganmu.vercel.app">
+          <input type="text" id="guestLinkName" placeholder="Masukkan nama tamu, misalnya Budi Santoso" required>
+          <button type="submit" class="btn-submit">Buat Link Tamu</button>
+        </form>
+        <p class="generator-status info" id="generatorStatus">Masukkan domain website dan nama tamu untuk membuat link undangan.</p>
+        <div class="generated-links hidden" id="generatedLinks">
+          <div class="generated-link-group">
+            <label for="generatedQueryLink">Link standar</label>
+            <div class="generated-link-row">
+              <input type="text" id="generatedQueryLink" readonly>
+              <button type="button" class="btn-secondary" id="copyQueryLink">Salin</button>
+            </div>
+          </div>
+          <div class="generated-link-group">
+            <label for="generatedPrettyLink">Link cantik untuk Vercel</label>
+            <div class="generated-link-row">
+              <input type="text" id="generatedPrettyLink" readonly>
+              <button type="button" class="btn-secondary" id="copyPrettyLink">Salin</button>
+            </div>
+          </div>
+          <p class="generator-note">Gunakan link standar untuk semua hosting. Link cantik juga sudah siap dipakai di Vercel, misalnya <strong>/budi-santoso</strong>.</p>
+        </div>
       </div>
     </section>
 

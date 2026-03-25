@@ -52,16 +52,141 @@ function getGuestNameFromUrl() {
 function setGuestName() {
     const guestName = getGuestNameFromUrl();
     const guestNameElements = document.querySelectorAll('[data-guest-name]');
+    const guestNameHint = document.getElementById('guestNameHint');
     if (guestName) {
         guestNameElements.forEach((element) => {
             element.textContent = guestName;
         });
         document.title = `Undangan Pernikahan untuk ${guestName}`;
+        guestNameHint?.classList.add('hidden');
+    }
+    else {
+        guestNameElements.forEach((element) => {
+            element.textContent = 'Nama Tamu';
+        });
+        document.title = 'Undangan Pernikahan - Romeo & Juliet';
+        guestNameHint?.classList.remove('hidden');
     }
     const wishNameInput = document.getElementById('wishName');
     if (wishNameInput && guestName) {
         wishNameInput.value = guestName;
     }
+}
+function getDefaultBaseUrl() {
+    if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') {
+        return '';
+    }
+    if (/\/index\.html$/i.test(window.location.pathname)) {
+        const sanitizedPath = window.location.pathname
+            .replace(/\/index\.html$/i, '')
+            .replace(/\/$/, '');
+        return `${window.location.origin}${sanitizedPath}`;
+    }
+    return window.location.origin;
+}
+function sanitizeBaseUrl(value) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+        return null;
+    }
+    try {
+        const normalizedValue = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+        const url = new URL(normalizedValue);
+        const sanitizedPath = url.pathname
+            .replace(/\/index\.html$/i, '')
+            .replace(/\/$/, '');
+        return `${url.origin}${sanitizedPath}`;
+    }
+    catch {
+        return null;
+    }
+}
+function createGuestSlug(guestName) {
+    return guestName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+function buildGuestLinks(baseUrl, guestName) {
+    const encodedGuestName = encodeURIComponent(guestName);
+    const slug = createGuestSlug(guestName);
+    return {
+        queryLink: `${baseUrl}/?to=${encodedGuestName}`,
+        prettyLink: `${baseUrl}/${slug}`
+    };
+}
+function setGeneratorStatus(message, tone) {
+    const status = document.getElementById('generatorStatus');
+    if (!status) {
+        return;
+    }
+    status.textContent = message;
+    status.className = `generator-status ${tone}`;
+}
+function copyText(text, successMessage) {
+    if (!navigator.clipboard?.writeText) {
+        setGeneratorStatus('Browser ini tidak mendukung salin otomatis. Silakan salin manual dari kotak link.', 'error');
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        setGeneratorStatus(successMessage, 'success');
+    }, () => {
+        setGeneratorStatus('Gagal menyalin link. Silakan salin manual dari kotak link.', 'error');
+    });
+}
+function setupLinkGenerator() {
+    const form = document.getElementById('linkGeneratorForm');
+    const baseUrlInput = document.getElementById('baseUrlInput');
+    const guestLinkNameInput = document.getElementById('guestLinkName');
+    const generatedLinks = document.getElementById('generatedLinks');
+    const generatedQueryLink = document.getElementById('generatedQueryLink');
+    const generatedPrettyLink = document.getElementById('generatedPrettyLink');
+    const copyQueryLinkButton = document.getElementById('copyQueryLink');
+    const copyPrettyLinkButton = document.getElementById('copyPrettyLink');
+    if (!form ||
+        !baseUrlInput ||
+        !guestLinkNameInput ||
+        !generatedLinks ||
+        !generatedQueryLink ||
+        !generatedPrettyLink ||
+        !copyQueryLinkButton ||
+        !copyPrettyLinkButton) {
+        return;
+    }
+    const defaultBaseUrl = getDefaultBaseUrl();
+    if (defaultBaseUrl) {
+        baseUrlInput.value = defaultBaseUrl;
+    }
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const sanitizedBaseUrl = sanitizeBaseUrl(baseUrlInput.value) ?? defaultBaseUrl;
+        const guestName = normalizeGuestName(guestLinkNameInput.value);
+        if (!sanitizedBaseUrl) {
+            setGeneratorStatus('Isi URL website Anda dulu, misalnya https://undanganmu.vercel.app.', 'error');
+            return;
+        }
+        if (!guestName) {
+            setGeneratorStatus('Isi nama tamu terlebih dahulu.', 'error');
+            return;
+        }
+        const links = buildGuestLinks(sanitizedBaseUrl, guestName);
+        generatedQueryLink.value = links.queryLink;
+        generatedPrettyLink.value = links.prettyLink;
+        generatedLinks.classList.remove('hidden');
+        setGeneratorStatus(`Link undangan untuk ${guestName} berhasil dibuat.`, 'success');
+    });
+    copyQueryLinkButton.addEventListener('click', () => {
+        if (generatedQueryLink.value) {
+            copyText(generatedQueryLink.value, 'Link standar berhasil disalin.');
+        }
+    });
+    copyPrettyLinkButton.addEventListener('click', () => {
+        if (generatedPrettyLink.value) {
+            copyText(generatedPrettyLink.value, 'Link cantik Vercel berhasil disalin.');
+        }
+    });
 }
 // ==================== OPEN INVITATION ====================
 function setupOpenButton() {
@@ -202,6 +327,7 @@ function escapeHtml(text) {
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
     setGuestName();
+    setupLinkGenerator();
     setupOpenButton();
     startCountdown();
     setupWishesForm();

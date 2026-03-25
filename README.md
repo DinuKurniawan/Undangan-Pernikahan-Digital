@@ -6,6 +6,7 @@ Landing page undangan pernikahan digital sederhana berbasis HTML, CSS, dan TypeS
 
 - Tampilan landing page undangan pernikahan
 - Nama tamu otomatis dari URL
+- Generator link tamu langsung di halaman
 - Countdown menuju hari acara
 - Form ucapan dan konfirmasi kehadiran
 - Responsive untuk mobile dan desktop
@@ -45,6 +46,49 @@ Parameter yang didukung:
 - `guest`
 - `nama`
 - `tamu`
+- `untuk`
+
+Selain query parameter, nama tamu juga bisa dibaca dari hash URL dan slug path:
+
+```text
+https://undanganmu.vercel.app/#to=Budi%20Santoso
+https://undanganmu.vercel.app/budi-santoso
+```
+
+## Generator Link Tamu
+
+Di halaman undangan sudah tersedia section **Generator Link Tamu**.
+
+Cara pakai:
+
+1. Isi URL website Anda, misalnya `https://undanganmu.vercel.app`
+2. Isi nama tamu
+3. Klik **Buat Link Tamu**
+4. Salin link yang dihasilkan
+
+Generator akan membuat dua format:
+
+- **Link standar**: `https://undanganmu.vercel.app/?to=Budi%20Santoso`
+- **Link cantik Vercel**: `https://undanganmu.vercel.app/budi-santoso`
+
+## Deploy ke Vercel
+
+Project ini sudah disiapkan untuk Vercel dengan file `vercel.json`.
+
+Langkah deploy:
+
+1. Push project ke GitHub
+2. Import repository ke Vercel
+3. Deploy project
+
+Setelah deploy, Anda bisa langsung kirim link seperti:
+
+```text
+https://undanganmu.vercel.app/?to=Budi%20Santoso
+https://undanganmu.vercel.app/budi-santoso
+```
+
+Format slug seperti `/budi-santoso` akan diarahkan ke `index.html`, lalu nama tamu dibaca otomatis oleh script.
 
 ## Struktur Proyek
 
@@ -57,7 +101,8 @@ Parameter yang didukung:
 ├── dist
 │   └── main.js
 ├── package.json
-└── tsconfig.json
+├── tsconfig.json
+└── vercel.json
 ```
 
 ## Kustomisasi
