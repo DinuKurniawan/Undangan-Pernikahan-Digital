@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Undangan Digital</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <main class="admin-page">
+    <section class="admin-panel">
+      <div class="container">
+        <p class="cover-label">Admin Access</p>
+        <h1 class="section-title">Generator Link Undangan Aman</h1>
+        <p class="admin-intro">Halaman ini khusus admin. Masukkan <code>ADMIN_KEY</code> dan nama tamu untuk membuat link undangan yang tidak bisa dipalsukan hanya dengan mengganti URL.</p>
+
+        <form id="adminInviteForm" class="admin-form">
+          <label for="adminKey">ADMIN_KEY</label>
+          <input type="password" id="adminKey" placeholder="Masukkan ADMIN_KEY dari Vercel" required>
+
+          <label for="adminGuestName">Nama Tamu</label>
+          <input type="text" id="adminGuestName" placeholder="Contoh: Budi Santoso" required>
+
+          <button type="submit" class="btn-submit">Buat Link Aman</button>
+        </form>
+
+        <p class="admin-status info" id="adminStatus">Isi ADMIN_KEY dan nama tamu untuk membuat link undangan aman.</p>
+
+        <div class="generated-invite hidden" id="generatedInviteBox">
+          <label for="inviteLink">Link Undangan Aman</label>
+          <div class="generated-link-row">
+            <input type="text" id="inviteLink" readonly>
+            <button type="button" class="btn-secondary" id="copyInviteLink">Salin</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="dist/admin.js"></script>
+</body>
+</html>

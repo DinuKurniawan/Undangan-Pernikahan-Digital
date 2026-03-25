@@ -5,7 +5,9 @@ Landing page undangan pernikahan digital sederhana berbasis HTML, CSS, dan TypeS
 ## Fitur
 
 - Tampilan landing page undangan pernikahan
-- Nama tamu otomatis dari URL
+- Nama tamu otomatis dari token invite aman
+- Backend Vercel untuk verifikasi link tamu
+- Halaman admin terpisah untuk membuat link undangan
 - Countdown menuju hari acara
 - Responsive untuk mobile dan desktop
 
@@ -25,33 +27,33 @@ npm run build
 
 Setelah itu buka file `index.html` di browser.
 
-## Auto Generate Nama Tamu
+## Sistem Link Aman
 
-Nama tamu akan tampil otomatis saat penerima membuka link undangan dengan query parameter.
+Sekarang nama tamu **tidak lagi** dibaca langsung dari URL publik seperti `?to=...`.
 
-Contoh:
-
-```text
-index.html?to=Budi%20Santoso
-index.html?guest=Rina%20Maharani
-index.html?nama=Andi%20Saputra
-index.html?tamu=Siti%20Aisyah
-```
-
-Parameter yang didukung:
-
-- `to`
-- `guest`
-- `nama`
-- `tamu`
-- `untuk`
-
-Selain query parameter, nama tamu juga bisa dibaca dari hash URL dan slug path:
+Link undangan dibuat oleh backend dengan token aman:
 
 ```text
-https://undanganmu.vercel.app/#to=Budi%20Santoso
-https://undanganmu.vercel.app/budi-santoso
+https://undanganmu.vercel.app/?invite=TOKEN_UNIK
 ```
+
+Halaman publik akan memanggil backend `/api/guest` untuk memverifikasi token tersebut.
+
+Keuntungannya:
+
+- tamu tidak bisa membuat nama tamu lain hanya dengan mengganti URL
+- hanya admin yang bisa membuat link
+- link publik tetap sederhana untuk dibagikan
+
+## Halaman Admin
+
+Halaman admin tersedia di:
+
+```text
+https://undanganmu.vercel.app/admin.html
+```
+
+Admin memakai `ADMIN_KEY` untuk membuat link undangan aman per tamu.
 
 ## Deploy ke Vercel
 
@@ -63,24 +65,45 @@ Langkah deploy:
 2. Import repository ke Vercel
 3. Deploy project
 
-Setelah deploy, Anda bisa langsung kirim link seperti:
+Setelah project terhubung ke Vercel, tambahkan Environment Variables berikut:
 
 ```text
-https://undanganmu.vercel.app/?to=Budi%20Santoso
-https://undanganmu.vercel.app/budi-santoso
+ADMIN_KEY=isi-password-admin-anda
+INVITE_SECRET=isi-rahasia-random-panjang-anda
 ```
 
-Format slug seperti `/budi-santoso` akan diarahkan ke `index.html`, lalu nama tamu dibaca otomatis oleh script.
+Lalu redeploy project.
+
+Setelah itu:
+
+1. buka `https://undanganmu.vercel.app/admin.html`
+2. masukkan `ADMIN_KEY`
+3. masukkan nama tamu
+4. salin link hasil generate
+
+Contoh hasil link:
+
+```text
+https://undanganmu.vercel.app/?invite=eyJ...
+```
 
 ## Struktur Proyek
 
 ```text
 .
+├── admin.html
+├── api
+│   ├── create-invite.js
+│   ├── guest.js
+│   └── _lib
+│       └── invite.js
 ├── index.html
 ├── style.css
 ├── src
+│   ├── admin.ts
 │   └── main.ts
 ├── dist
+│   ├── admin.js
 │   └── main.js
 ├── package.json
 ├── tsconfig.json
@@ -95,6 +118,8 @@ Ubah konten berikut sesuai kebutuhan:
 - Tanggal dan lokasi acara di `index.html`
 - Styling tema di `style.css`
 - Logika interaktif di `src/main.ts`
+- Logika admin di `src/admin.ts`
+- Validasi token di `api/_lib/invite.js`
 
 ## Script
 

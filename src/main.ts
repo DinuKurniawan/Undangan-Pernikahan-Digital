@@ -1,120 +1,83 @@
-// ==================== GUEST NAME FROM URL ====================
-function normalizeGuestName(value: string): string {
-  return value
-    .replace(/[+_]/g, ' ')
-    .replace(/%20/gi, ' ')
-    .replace(/-/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getGuestNameFromHash(): string | null {
-  const hash = window.location.hash.replace(/^#/, '').trim();
-
-  if (!hash) {
-    return null;
-  }
-
-  const hashParams = new URLSearchParams(hash);
-  const keys = ['to', 'guest', 'nama', 'tamu', 'untuk'];
-
-  for (const key of keys) {
-    const value = hashParams.get(key);
-
-    if (value) {
-      return normalizeGuestName(value);
-    }
-  }
-
-  return normalizeGuestName(hash);
-}
-
-function getGuestNameFromPath(): string | null {
-  const segments = window.location.pathname
-    .split('/')
-    .map((segment) => segment.trim())
-    .filter(Boolean);
-
-  const lastSegment = segments[segments.length - 1];
-
-  if (!lastSegment || lastSegment.toLowerCase() === 'index.html' || lastSegment.includes('.')) {
-    return null;
-  }
-
-  return normalizeGuestName(lastSegment);
-}
-
-function getGuestNameFromUrl(): string | null {
-  const params = new URLSearchParams(window.location.search);
-  const keys = ['to', 'guest', 'nama', 'tamu', 'untuk'];
-
-  for (const key of keys) {
-    const value = params.get(key);
-
-    if (value) {
-      const normalized = normalizeGuestName(value);
-
-      if (normalized) {
-        return normalized;
-      }
-    }
-  }
-
-  return getGuestNameFromHash() ?? getGuestNameFromPath();
-}
-
-function setGuestName(): void {
-  const guestName = getGuestNameFromUrl();
+function setGuestNameText(name: string): void {
   const guestNameElements = document.querySelectorAll<HTMLElement>('[data-guest-name]');
+
+  guestNameElements.forEach((element) => {
+    element.textContent = name;
+  });
+}
+
+function setGuestHint(message: string, tone: 'info' | 'error'): void {
   const guestNameHint = document.getElementById('guestNameHint');
 
-  if (guestName) {
-    guestNameElements.forEach((element) => {
-      element.textContent = guestName;
-    });
+  if (!guestNameHint) {
+    return;
+  }
 
-    document.title = `Undangan Pernikahan untuk ${guestName}`;
-    guestNameHint?.classList.add('hidden');
-  } else {
-    guestNameElements.forEach((element) => {
-      element.textContent = 'Nama Tamu';
-    });
+  guestNameHint.textContent = message;
+  guestNameHint.className = `guest-name-hint ${tone}`;
+}
 
+async function resolveGuestName(): Promise<void> {
+  const inviteToken = new URLSearchParams(window.location.search).get('invite');
+
+  if (!inviteToken) {
+    setGuestNameText('Nama Tamu');
     document.title = 'Undangan Pernikahan - Romeo & Juliet';
-    guestNameHint?.classList.remove('hidden');
+    setGuestHint('Link undangan aman harus dibuat dari halaman admin dan berisi token invite.', 'info');
+    return;
+  }
+
+  setGuestHint('Memuat data tamu undangan...', 'info');
+
+  try {
+    const response = await fetch(`/api/guest?invite=${encodeURIComponent(inviteToken)}`, {
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+
+    const payload = await response.json() as { guestName?: string; error?: string };
+
+    if (!response.ok || !payload.guestName) {
+      throw new Error(payload.error ?? 'Link undangan tidak valid.');
+    }
+
+    setGuestNameText(payload.guestName);
+    document.title = `Undangan Pernikahan untuk ${payload.guestName}`;
+    setGuestHint('Nama tamu berhasil diverifikasi dari backend undangan.', 'info');
+  } catch (error) {
+    setGuestNameText('Tamu Undangan');
+    document.title = 'Undangan Pernikahan - Romeo & Juliet';
+    setGuestHint(error instanceof Error ? error.message : 'Link undangan tidak valid.', 'error');
   }
 }
 
-// ==================== OPEN INVITATION ====================
 function setupOpenButton(): void {
   const btnOpen = document.getElementById('btnOpen');
   const cover = document.getElementById('cover');
   const mainContent = document.getElementById('mainContent');
 
-  if (!btnOpen || !cover || !mainContent) return;
+  if (!btnOpen || !cover || !mainContent) {
+    return;
+  }
 
   btnOpen.addEventListener('click', () => {
     cover.classList.add('open');
     mainContent.classList.remove('hidden');
     document.body.style.overflow = 'auto';
 
-    // Remove cover from DOM after animation
     setTimeout(() => {
       cover.style.display = 'none';
     }, 800);
 
-    // Trigger fade-in animations
     setTimeout(() => {
       observeFadeElements();
     }, 300);
   });
 
-  // Lock scroll when cover is shown
   document.body.style.overflow = 'hidden';
 }
 
-// ==================== COUNTDOWN TIMER ====================
 function startCountdown(): void {
   const weddingDate = new Date('2026-06-20T08:00:00+07:00').getTime();
 
@@ -147,10 +110,12 @@ function startCountdown(): void {
 
 function setCountdownValue(id: string, value: string): void {
   const el = document.getElementById(id);
-  if (el) el.textContent = value;
+
+  if (el) {
+    el.textContent = value;
+  }
 }
 
-// ==================== SCROLL FADE-IN ====================
 function observeFadeElements(): void {
   const fadeElements = document.querySelectorAll('.fade-in');
 
@@ -165,15 +130,14 @@ function observeFadeElements(): void {
     }, { threshold: 0.2 });
 
     fadeElements.forEach((el) => observer.observe(el));
-  } else {
-    // Fallback: show all
-    fadeElements.forEach((el) => el.classList.add('visible'));
+    return;
   }
+
+  fadeElements.forEach((el) => el.classList.add('visible'));
 }
 
-// ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
-  setGuestName();
+  void resolveGuestName();
   setupOpenButton();
   startCountdown();
 });
