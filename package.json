@@ -1,0 +1,12 @@
+{
+  "name": "undangan-digital",
+  "version": "1.0.0",
+  "description": "Website undangan pernikahan digital",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}
