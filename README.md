@@ -6,9 +6,7 @@ Landing page undangan pernikahan digital sederhana berbasis HTML, CSS, dan TypeS
 
 - Tampilan landing page undangan pernikahan
 - Nama tamu otomatis dari URL
-- Generator link tamu langsung di halaman
 - Countdown menuju hari acara
-- Form ucapan dan konfirmasi kehadiran
 - Responsive untuk mobile dan desktop
 
 ## Cara Menjalankan
@@ -54,22 +52,6 @@ Selain query parameter, nama tamu juga bisa dibaca dari hash URL dan slug path:
 https://undanganmu.vercel.app/#to=Budi%20Santoso
 https://undanganmu.vercel.app/budi-santoso
 ```
-
-## Generator Link Tamu
-
-Di halaman undangan sudah tersedia section **Generator Link Tamu**.
-
-Cara pakai:
-
-1. Isi URL website Anda, misalnya `https://undanganmu.vercel.app`
-2. Isi nama tamu
-3. Klik **Buat Link Tamu**
-4. Salin link yang dihasilkan
-
-Generator akan membuat dua format:
-
-- **Link standar**: `https://undanganmu.vercel.app/?to=Budi%20Santoso`
-- **Link cantik Vercel**: `https://undanganmu.vercel.app/budi-santoso`
 
 ## Deploy ke Vercel
 
